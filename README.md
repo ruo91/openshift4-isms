@@ -215,7 +215,7 @@ su(substitute user or switch user) 권한을 가진 계정에서만 사용 가�
     auth            required        pam_wheel.so use_uid
 
 ## 6. Session Timeout 설정 (U-54)
-Sesstion Timeoute 값이 설정되지 않은 경우 유휴 시간 내 비인가자가 시스템에 접근이 가능하기 때문에,  
+Sesstion Timeout 값이 설정되지 않은 경우 유휴 시간 내 비인가자가 시스템에 접근이 가능하기 때문에,  
 이를 막기 위함이다.
 
 해당 내용은 KISA 가이드 121p에서 확인 가능하다.
