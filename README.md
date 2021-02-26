@@ -1,16 +1,16 @@
 
 # OpenShift v4.x - ISMS 인증을 위한 보안 취약점 설정
-ISMS(Information Security Management System)가 의무대상인 기업에서는 필수로 조치 되어야 한다.
+ISMS(Information Security Management System)가 의무대상인 기업에서는 필수로 조치 되어야 한다.  
 조치 가이드는 KISA에서 제공하는 **'주요정보통신기반시설 기술적 취약점 분석 평가 상세 가이드'** [(Link 1)](https://www.kisa.or.kr/public/laws/laws3_View.jsp?cPage=6&mode=view&p_No=259&b_No=259&d_No=106&ST=T&SV=)를 통해 설정 한다.
 
 해당 가이드가 현재 기준으로 2017년 12월 일자가 마지막이라 수정해야 할 부분이 많지만 어쩔수 없다.
 
-고객사 마다 설정 값들에 대한 정책이 다를수 있으며, 자주 사용하는 부분에 대해서만 예제 형식으로 기록한다.
-해당 예제 파일은 아래 링크에서 확인 가능하다.
+고객사 마다 설정 값들에 대한 정책이 다를수 있으며, 자주 사용하는 부분에 대해서만 예제 형식으로 기록한다.  
+해당 예제 파일은 아래 링크에서 확인 가능하다.  
 https://github.com/ruo91/openshift4-isms
 
 ##  1. Redhat CoreOS 설정
-RedHat CoreOS는 RHEL 8.x 버전을 기준으로 Container에 특화된 OS로써,
+RedHat CoreOS는 RHEL 8.x 버전을 기준으로 Container에 특화된 OS로써,  
 파일 및 디렉토리 권한은 Read Only 시스템이 기본이다.
 
 즉, 사용자가 RHCOS를 직접 개입하여 관리하지 않아도 되는 시스템이며,
@@ -18,22 +18,25 @@ OpenShift에서 Machine Config라는 기능을 사용하여 자동 관리가 되
 
 따라서, 기존 Legacy 시스템과 동일하게 생각하면 안된다.
 
-그 이유는 다음과 같다.
-- SSH 접근
-  core 사용자를 통해 ssh key 기반의 접근만 허용 한다.
-  root 사용자를 허용하지 않으며, core 사용자로 root 계정에 스위칭하여 접근해야 한다.
+그 이유는 다음과 같다.  
+- SSH 접근  
+  core 사용자를 통해 ssh key 기반의 접근만 허용 한다.  
+  root 사용자를 허용하지 않으며, core 사용자로 root 계정에 스위칭하여 접근해야 한다.  
 
-- 3rd party 소프트웨어
-  RHCOS는 제 3자 소프트웨어를 설치 할 수가 없다.
-  Container만을 위한 OS이므로, Package Manager가 없기 때문이며,
-  굳이 설치하겠다면, 3rd party 소프트웨어 제조회사가 직접 만들고,
-  Container 형태로 만들어 OpenShift 환경에 맞도록 배포해야 한다.
 
-- 설정 파일
-  최고 관리자 계정인 root 권한으로 파일이 설정 되어있으며,
-  OpenShift Machine Config 기능을 사용하여 파일에 대해 덮어쓰기(overwrite)해야 가능하다.
-  이 부분에 대해서는 OpenShift 엔지니어가 개입되어 고객과 협의 후 설정이 필요하다.
+- 3rd party 소프트웨어  
+  RHCOS는 제 3자 소프트웨어를 설치 할 수가 없다.  
+  Container만을 위한 OS이므로, Package Manager가 없기 때문이며,  
+  굳이 설치하겠다면, 3rd party 소프트웨어 제조회사가 직접 만들고,  
+  Container 형태로 만들어 OpenShift 환경에 맞도록 배포해야 한다.  
+
+
+- 설정 파일  
+  최고 관리자 계정인 root 권한으로 파일이 설정 되어있으며,  
+  OpenShift Machine Config 기능을 사용하여 파일에 대해 덮어쓰기(overwrite)해야 가능하다.  
+  이 부분에 대해서는 OpenShift 엔지니어가 개입되어 고객과 협의 후 설정이 필요하다.  
   다만, RedHat 지원 범위를 넘어서는 부분에 대해서는 지원이 되지 않을 수 있다.
+
 
 ## 2. 설정 파일 디렉토리 생성
 변경 되지 않은 RHCOS의 설정 파일을 복사할 디렉토리를 생성한다.
@@ -41,7 +44,7 @@ OpenShift에서 Machine Config라는 기능을 사용하여 자동 관리가 되
     [root@bastion ~]# mkdir -p /opt/isms/etc/{ssh,pam.d,security}
 
 ## 3. 패스워드 복잡성 설정 (U-02)
-패스워드 복잡성 관련하여 비인가자의 공격에 대비하기 위한 설정이다.
+패스워드 복잡성 관련하여 비인가자의 공격에 대비하기 위한 설정이다.  
 해당 내용은 KISA 가이드 21p~26p에서 확인 가능하다.
 
 ### 3.1. 설정 파일 복사
@@ -106,7 +109,7 @@ RHCOS에서 설정 파일을 복사 해온다.
     ocredit = -1
 
 ## 4. 계정 잠금 임계값 설정 (U-03)
-시스템 정책에 사용자 로그인 실패 임계값을 설정하여, 비인가자의 brute-force attack에 대한 방어 설정이다.
+시스템 정책에 사용자 로그인 실패 임계값을 설정하여, 비인가자의 brute-force attack에 대한 방어 설정이다.  
 즉, 특정 계정에 대해 패스워드를 임계값 이상 실패하면 계정 잠금 설정이 되도록 한다.
 
 해당 내용은 KISA 가이드 27p~29p에서 확인 가능하다.
@@ -117,8 +120,7 @@ RHCOS에서 설정 파일을 복사 해온다.
     [root@bastion ~]# ssh core@master01 "cat /etc/pam.d/password-auth" > /opt/isms/etc/pam.d/password-auth
 
 ### 4.2. 설정 파일 수정
-해당 설정은 PAM(Pluggable Authentication Modules)을 수정하는 부분이며,
-라인에 유의하여 추가/수정 한다.
+해당 설정은 PAM(Pluggable Authentication Modules)을 수정하는 부분이며, 라인에 유의하여 추가/수정 한다.
 
 #### 4.2.1. system-auth [(Link 4)](https://github.com/ruo91/openshift4-isms/blob/main/etc/pam.d/system-auth#L2),[(Link 5)](https://github.com/ruo91/openshift4-isms/blob/main/etc/pam.d/system-auth#L8-L9),[(Link6)](https://github.com/ruo91/openshift4-isms/blob/main/etc/pam.d/system-auth#L21-L22)
 
@@ -191,8 +193,8 @@ RHCOS에서 설정 파일을 복사 해온다.
     session     optional                                     pam_sss.so
 
 ## 5. root 계정 su 제한 (U-45)
-su(substitute user or switch user) 권한을 가진 계정에서만 사용 가능하도록 비활성화 한다.
-이는 비인가자가 brute-force attack 또는 패스워드 추측 공격을 통해 계정을 탈취 후
+su(substitute user or switch user) 권한을 가진 계정에서만 사용 가능하도록 비활성화 한다.  
+이는 비인가자가 brute-force attack 또는 패스워드 추측 공격을 통해 계정을 탈취 후  
 최고관리자 계정(root)를 유출 할 가능성을 배제 시키기 위함이다.
 
 해당 내용은 KISA 가이드 103p~105p에서 확인 가능하다.
@@ -213,7 +215,7 @@ su(substitute user or switch user) 권한을 가진 계정에서만 사용 가�
     auth            required        pam_wheel.so use_uid
 
 ## 6. Session Timeout 설정 (U-54)
-Sesstion Timeoute 값이 설정되지 않은 경우 유휴 시간 내 비인가자가 시스템에 접근이 가능하기 때문에,
+Sesstion Timeoute 값이 설정되지 않은 경우 유휴 시간 내 비인가자가 시스템에 접근이 가능하기 때문에,  
 이를 막기 위함이다.
 
 해당 내용은 KISA 가이드 121p에서 확인 가능하다.
@@ -254,7 +256,7 @@ Timeout 변수를 설정한다.
     set autologout=5
 
 ## 7. 로그인시 경고 메세지 제공 (U-69)
-비인가자들에게 서버에 대한 불필요한 정보를 제공하지 않고,
+비인가자들에게 서버에 대한 불필요한 정보를 제공하지 않고,  
 서버 접속시 관계자만 접속해야 한다는 경각심을 심어 주기위해 경고 메세지 설정을 한다.
 
 해당 내용은 KISA 가이드 145p~147p에서 확인 가능하다.
@@ -294,7 +296,7 @@ issue, motd 설정 파일은 따로 복사할 필요는 없으므로, 직접 생
 
 
 ## 8. Machine Config 설정
-3~7번까지 생성한 파일들을 OpenShift의 Machine Config에 추가하려면
+3~7번까지 생성한 파일들을 OpenShift의 Machine Config에 추가하려면  
 해당 파일의 내용을 Base64로 인코딩하여 데이터를 삽입해야 한다.
 
 그 이유는 Kubernetes 환경에서는 민감한 정보를 Basd64로 인코딩하여 관리하기 때문이다.
@@ -368,7 +370,7 @@ OpenShift v4.x 버전부터 사용할 수 있는 machine config 파일을 생성
             path: /etc/motd
 
 ### 8.3. Machine Config 생성
-수초 이내 Machine Config Operator가 생성 된 Machine Config 파일을 감지하여,
+수초 이내 Machine Config Operator가 생성 된 Machine Config 파일을 감지하여,  
 Machine Config Pool에 자동 등록 후 클러스터 노드에 반영하기 위해 Rolling 방식으로 하나씩 재부팅을 한다.
 
     [root@bastion ~]# oc create -f /opt/isms/99-master-isms-machine-config.yaml
@@ -394,7 +396,7 @@ RHCOS 노드에 SSH 접속하여 설정 확인을 한다.
     [core@master01 ~]$
 
 ### 9.2. 계정 로그인 실패 테스트
-일반 계정을 하나 생성 후 의도적으로 패스워드를 잘못 입력하도록 한다.
+일반 계정을 하나 생성 후 의도적으로 패스워드를 잘못 입력하도록 한다.  
 이후 su 권한으로 실패한 계정을 확인 후 복구 한다.
 
 #### - 사용자 생성 및 패스워드 설정
