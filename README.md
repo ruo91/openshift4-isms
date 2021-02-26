@@ -299,7 +299,7 @@ issue, motd 설정 파일은 따로 복사할 필요는 없으므로, 직접 생
 3~7번까지 생성한 파일들을 OpenShift의 Machine Config에 추가하려면  
 해당 파일의 내용을 Base64로 인코딩하여 데이터를 삽입해야 한다.
 
-그 이유는 Kubernetes 환경에서는 민감한 정보를 Basd64로 인코딩하여 관리하기 때문이다.
+그 이유는 Kubernetes 환경에서는 민감한 정보를 Base64로 인코딩하여 관리하기 때문이다.
 https://github.com/kubernetes/community/blob/master/contributors/design-proposals/auth/secrets.md
 
 ### 8.1. Base64 인코딩
